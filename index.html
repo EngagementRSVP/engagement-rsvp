@@ -3,18 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
-</head>
-<body>
 <title>Hazar &amp; Yousef RSVP</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Karla:wght@400;500;600&display=swap">
 <style>
-/* Layout: a single narrow column — an invitation card first, the RSVP form directly beneath it, host tools at the bottom (owner only). */
+/* Layout: a single narrow column — an invitation card first, the RSVP form directly beneath it. */
 :root{
   --bg:#edf1ee; --card:#f8faf8; --ink:#1c2924; --muted:#5d6f68; --line:#cfd8d3;
   --accent:#a8566a; --accent-ink:#ffffff; --soft:#e4cdd3; --ok:#2f7a5a; --warn:#9a6a1e; --bad:#9b3d3d;
   --display:"Bodoni Moda",Didot,"Times New Roman",serif; --body:"Karla","Helvetica Neue",Arial,sans-serif;
+  color-scheme:light;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#131a17; --card:#1b2521; --ink:#eef2ef; --muted:#9fb0a8; --line:#33423c;
@@ -24,7 +21,8 @@
   --accent:#d98a9c; --accent-ink:#1b1013; --soft:#3d2a30; --ok:#6fc49a; --warn:#d7a84f; --bad:#e07b7b; color-scheme:dark }
 
 *{box-sizing:border-box}
-body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 56px}
 .wrap{max-width:560px;margin:0 auto;display:grid;gap:22px}
 h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;line-height:1.1}
@@ -43,8 +41,8 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;text-wrap:balance;l
 .rsvp{display:grid;gap:18px}
 .rsvp h2{font-size:26px}
 label{display:grid;gap:6px;font-size:14px;font-weight:600}
-input[type=text],input[type=tel],input[type=number],select{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:11px 12px;width:100%;min-width:0}
-input:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=tel]{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:11px 12px;width:100%;min-width:0}
+input:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
 .row>*{flex:1 1 180px;min-width:0}
 button{font:inherit;font-weight:600;border-radius:4px;border:1px solid var(--line);background:var(--card);color:var(--ink);padding:11px 16px;cursor:pointer}
@@ -62,95 +60,60 @@ button:disabled{opacity:.5;cursor:default}
 .stepper{display:flex;align-items:center;gap:14px;justify-content:center}
 .stepper button{width:48px;height:48px;font-size:22px;padding:0;border-radius:50%}
 .stepper output{font-family:var(--display);font-size:44px;min-width:64px;text-align:center;font-variant-numeric:tabular-nums}
-.msgbox{background:var(--bg);border:1px dashed var(--line);border-radius:4px;padding:12px 14px;font-size:15px;white-space:pre-wrap;user-select:all}
 .hostnum{font-variant-numeric:tabular-nums;font-weight:600}
 .done{display:grid;gap:10px;text-align:center}
 .done .greet{color:var(--ok)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .actions>*{flex:1 1 160px}
-a.primary{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;font-weight:600;border-radius:4px;padding:11px 16px;background:var(--accent);color:var(--accent-ink);border:1px solid var(--accent)}
-
-/* Host panel */
-.host{display:grid;gap:18px}
-.host header{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
-.host h2{font-size:24px}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
-.tile{border:1px solid var(--line);border-radius:4px;padding:10px 12px;display:grid;gap:2px}
-.tile span{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.tile b{font-size:26px;font-family:var(--display);font-weight:500;font-variant-numeric:tabular-nums}
-.tile.total{border-color:var(--accent);background:var(--soft)}
-.tile.total b{color:var(--accent);font-size:32px}
-.fields{display:grid;gap:12px}
-.tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:540px;font-size:14px}
-th{text-align:left;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 6px;border-bottom:1px solid var(--line)}
-td{padding:6px;border-bottom:1px solid var(--line);vertical-align:middle}
-td input,td select{padding:7px 8px;font-size:14px}
-td.n{width:76px}td.st{width:150px}td.x{width:36px;text-align:center}
-td.x button{padding:4px 8px;border:none;background:transparent;color:var(--muted);font-size:18px;line-height:1}
-.pill{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;border:1px solid currentColor}
-.pill.ok{color:var(--ok)}.pill.bad{color:var(--bad)}.pill.warn{color:var(--warn)}
-.status{min-height:22px;font-size:14px;color:var(--muted)}
+a.secondary{display:inline-flex;justify-content:center;align-items:center;text-decoration:none;font-weight:600;border-radius:4px;padding:11px 16px;background:var(--card);color:var(--ink);border:1px solid var(--line)}
 .foot{text-align:center;font-size:13px;color:var(--muted)}
-@media (prefers-reduced-motion:no-preference){ .card{transition:border-color .2s} }
 </style>
-
-<template id="page-tpl">
+</head>
+<body>
 <div class="wrap">
   <section class="card invite" id="invite">
     <p class="eyebrow">Together with their families</p>
-    <h1 class="names"><span data-f="name1">Layla</span><i>&amp;</i><span data-f="name2">Kareem</span></h1>
+    <h1 class="names"><span data-f="name1">Hazar</span><i>&amp;</i><span data-f="name2">Yousef</span></h1>
     <p class="eyebrow">invite you to celebrate their engagement</p>
     <div class="when">
-      <b data-f="date">Friday, 12 December 2026</b>
-      <span data-f="time">7:30 PM</span>
-      <span class="venue" data-f="venue">The Garden Hall, Jumeirah, Dubai</span>
+      <b data-f="date">Sunday, 06 December 2026</b>
+      <span data-f="time">5:30 PM</span>
+      <span class="venue" data-f="venue">Vida Marina Hotel, Dubai</span>
     </div>
     <span class="deadline">Kindly reply by <span data-f="deadline">1 December</span></span>
   </section>
 
   <section class="card rsvp" id="rsvp" aria-live="polite"></section>
 
-  <section class="card host" id="host" hidden></section>
-
-  <p class="foot">Questions? Message <span class="hostnum" data-f="hostDisplay">+971 50 000 0000</span> on WhatsApp.</p>
+  <p class="foot">Questions? Message <span class="hostnum" data-f="hostDisplay">+971 555 674 429</span> on WhatsApp.</p>
 </div>
-</template>
 
-<!--
-  ===== EDIT YOUR DETAILS HERE =====
-  event: the couple's names, date, time, venue, reply-by date and your WhatsApp number
-         (digits only, with country code, e.g. 971501234567).
-  guests: one entry per invitation. "phone" is the mobile the guest will type in,
-         "seats" is the maximum they may bring. Leave status "pending" and coming 0.
-  Keep the commas and quotes exactly as shown.
--->
-<script type="application/json" id="rsvp-data">{"event":{"name1":"Hazar","name2":"Yousef","date":"Sunday, 06 December 2026","time":"5:30 PM","venue":"Vida Marina Hotel, Dubai","deadline":"1 December","hostPhone":"+971555674429"},"guests":[{"id":"g1","name":"Al Mansoori family (sample)","phone":"0501234567","seats":4,"status":"pending","coming":0},{"id":"g2","name":"Sara Haddad (sample)","phone":"0559876543","seats":2,"status":"pending","coming":0},{"id":"g3","name":"Omar & Dana (sample)","phone":"0521112222","seats":3,"status":"pending","coming":0},{"id":"gmw9lje55","name":"Yousef Issa","phone":"0509413587","seats":1,"status":"pending","coming":0}]}</script>
-
-<script id="app-js">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="config.js"></script>
+<script>
 (function(){
-  const DATA = JSON.parse(document.getElementById('rsvp-data').textContent);
-  const root = document.createElement('div');
-  root.appendChild(document.getElementById('page-tpl').content.cloneNode(true));
-  document.body.appendChild(root);
-
-  const $ = (s, el=root) => el.querySelector(s);
+  const sb = supabase.createClient(RSVP_CONFIG.url, RSVP_CONFIG.anonKey, { auth: { persistSession: false } });
+  const $ = s => document.querySelector(s);
   const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const digits = s => String(s||'').replace(/\D/g,'');
-  function norm(p){ let d = digits(p); if (d.startsWith('00')) d = d.slice(2); if (d.length===10 && d.startsWith('0')) d = d.slice(1); return d; }
-  function phoneMatch(a,b){ a=norm(a); b=norm(b); if (a.length<7||b.length<7) return false; return a.endsWith(b)||b.endsWith(a); }
   function fmtHost(d){ d = digits(d); return d ? '+' + d.replace(/(\d{3})(\d{2})(\d{3})(\d{4})$/,'$1 $2 $3 $4') : '—'; }
-  const couple = () => `${DATA.event.name1} & ${DATA.event.name2}`;
+  let EV = { name1:'Hazar', name2:'Yousef', host_phone:'+971555674429' };
+  const couple = () => `${EV.name1} & ${EV.name2}`;
 
-  // Fill invitation fields
-  for (const el of root.querySelectorAll('[data-f]')) {
-    const k = el.dataset.f;
-    el.textContent = k==='hostDisplay' ? fmtHost(DATA.event.hostPhone) : (DATA.event[k] ?? '');
+  function fillInvite(){
+    for (const el of document.querySelectorAll('[data-f]')) {
+      const k = el.dataset.f;
+      el.textContent = k==='hostDisplay' ? fmtHost(EV.host_phone) : (EV[k] ?? '');
+    }
+    document.title = `${couple()} RSVP`;
   }
+
+  // Invitation details live in the database so the host can change them without redeploying
+  sb.from('event').select('*').eq('id', 1).maybeSingle().then(({ data }) => { if (data) { EV = data; fillInvite(); } });
 
   /* ---------- Guest RSVP flow ---------- */
   const rsvp = $('#rsvp');
-  let guest = null, attending = null, count = 0;
+  let guest = null, phone = '', attending = null, count = 0;
 
   function renderLookup(err){
     rsvp.innerHTML = `
@@ -158,26 +121,30 @@ td.x button{padding:4px 8px;border:none;background:transparent;color:var(--muted
       <p class="note">Enter the mobile number your invitation was sent to.</p>
       <form id="lookup">
         <div class="row">
-          <label for="phone">Mobile number<input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050 123 4567" required></label>
-          <button class="primary" type="submit">Continue</button>
+          <label for="phone">Mobile number<input id="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="050 123 4567" required value="${esc(phone)}"></label>
+          <button class="primary" type="submit" id="find">Continue</button>
         </div>
         ${err ? `<p class="err" style="margin-top:10px">${esc(err)}</p>` : ''}
       </form>`;
-    $('#lookup').addEventListener('submit', e => {
+    $('#lookup').addEventListener('submit', async e => {
       e.preventDefault();
-      const v = $('#phone').value;
-      const g = DATA.guests.find(x => phoneMatch(x.phone, v));
-      if (!g) return renderLookup(`We couldn't find that number. Try the number your invitation was sent to, or message ${fmtHost(DATA.event.hostPhone)}.`);
+      phone = $('#phone').value;
+      $('#find').disabled = true; $('#find').textContent = 'Looking…';
+      const { data, error } = await sb.rpc('lookup_guest', { p_phone: phone });
+      if (error) return renderLookup('Something went wrong. Please check your connection and try again.');
+      const g = data && data[0];
+      if (!g) return renderLookup(`We couldn't find that number. Try the number your invitation was sent to, or message ${fmtHost(EV.host_phone)}.`);
       guest = g; attending = g.status==='attending' ? true : g.status==='declined' ? false : null;
       count = g.coming || g.seats; renderChoice();
     });
   }
 
-  function renderChoice(){
+  function renderChoice(err){
     const s = guest.seats;
     rsvp.innerHTML = `
       <div><p class="eyebrow">RSVP</p><p class="greet">Welcome, ${esc(guest.name)}</p>
-        <p class="seats">We have reserved <b>${s} ${s===1?'seat':'seats'}</b> for you.</p></div>
+        <p class="seats">We have reserved <b>${s} ${s===1?'seat':'seats'}</b> for you.</p>
+        ${guest.status!=='pending' ? `<p class="note">You already replied. You can change your answer below.</p>` : ''}</div>
       <div class="choice">
         <button id="yes" aria-pressed="${attending===true}">Joyfully accept</button>
         <button id="no" aria-pressed="${attending===false}">Regretfully decline</button>
@@ -191,9 +158,10 @@ td.x button{padding:4px 8px;border:none;background:transparent;color:var(--muted
         </div>
         <p class="note" style="text-align:center;margin-top:6px">Up to ${s}</p>
       </div>
+      ${err ? `<p class="err">${esc(err)}</p>` : ''}
       <div class="actions">
         <button class="ghost" id="back">Not you?</button>
-        <button class="primary" id="next" ${attending===null?'disabled':''}>Continue</button>
+        <button class="primary" id="next" ${attending===null?'disabled':''}>Send my reply</button>
       </div>`;
     const sync = () => { $('#yes').setAttribute('aria-pressed', attending===true); $('#no').setAttribute('aria-pressed', attending===false);
       $('#seatpick').hidden = attending!==true; $('#next').disabled = attending===null; $('#cnt').value = count;
@@ -202,162 +170,39 @@ td.x button{padding:4px 8px;border:none;background:transparent;color:var(--muted
     $('#no').onclick = () => { attending = false; sync(); };
     $('#minus').onclick = () => { count = Math.max(1, count-1); sync(); };
     $('#plus').onclick = () => { count = Math.min(s, count+1); sync(); };
-    $('#back').onclick = () => { guest=null; renderLookup(); };
-    $('#next').onclick = renderSend;
+    $('#back').onclick = () => { guest=null; phone=''; renderLookup(); };
+    $('#next').onclick = submit;
     sync();
   }
 
-  function message(){
-    return attending
+  async function submit(){
+    const b = $('#next'); b.disabled = true; b.textContent = 'Sending…';
+    const { error } = await sb.rpc('submit_rsvp', { p_id: guest.id, p_phone: phone, p_attending: attending, p_coming: attending ? count : 0 });
+    if (error) return renderChoice('Your reply could not be saved. Please check your connection and try again.');
+    guest.status = attending ? 'attending' : 'declined'; guest.coming = attending ? count : 0;
+    renderDone();
+  }
+
+  function renderDone(){
+    const msg = attending
       ? `RSVP for ${couple()}'s engagement\n${guest.name}: attending, ${count} of ${guest.seats} seats.`
       : `RSVP for ${couple()}'s engagement\n${guest.name}: unable to attend.`;
-  }
-
-  function renderSend(){
-    const msg = message();
-    const wa = `https://wa.me/${digits(DATA.event.hostPhone)}?text=${encodeURIComponent(msg)}`;
+    const wa = `https://wa.me/${digits(EV.host_phone)}?text=${encodeURIComponent(msg)}`;
     rsvp.innerHTML = `
       <div class="done">
-        <p class="eyebrow">One last step</p>
+        <p class="eyebrow">Reply received</p>
         <p class="greet">${attending ? `We can't wait to see you${count>1?' all':''}` : `We'll miss you`}</p>
-        <p class="note">Send this reply to ${esc(couple())} on WhatsApp so your ${attending?'seats are':'answer is'} recorded.</p>
+        <p class="note">${attending ? `Your ${count} ${count===1?'seat is':'seats are'} confirmed.` : 'Your answer has been recorded.'} ${esc(couple())} can see it now.</p>
       </div>
-      <div class="msgbox" id="msg">${esc(msg)}</div>
       <div class="actions">
-        <a class="primary" id="wa" href="${wa}" target="_blank" rel="noopener">Send on WhatsApp</a>
-        <button id="copy">Copy message</button>
-      </div>
-      <p class="note">If WhatsApp doesn't open, copy the message and send it to <span class="hostnum">${fmtHost(DATA.event.hostPhone)}</span>.</p>
-      <div class="actions"><button class="ghost" id="edit">Change my answer</button></div>`;
-    $('#copy').onclick = async () => {
-      const b = $('#copy');
-      try { await navigator.clipboard.writeText(msg); b.textContent='Copied'; }
-      catch { const r=document.createRange(); r.selectNodeContents($('#msg')); const sel=getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent='Select & copy'; }
-      setTimeout(()=>b.textContent='Copy message',2000);
-    };
-    $('#edit').onclick = renderChoice;
-  }
-  renderLookup();
-
-  /* ---------- Host panel (owner only) ---------- */
-  const host = $('#host');
-  let draft = JSON.parse(JSON.stringify(DATA));
-  let art = null, dl = null;
-
-  function renderHost(){
-    const g = draft.guests;
-    const invited = g.reduce((a,x)=>a+(+x.seats||0),0);
-    const confirmed = g.filter(x=>x.status==='attending').reduce((a,x)=>a+(+x.coming||0),0);
-    const declined = g.filter(x=>x.status==='declined').length;
-    const pending = g.filter(x=>x.status==='pending').length;
-    const ev = draft.event;
-    const field = (k,label,ph='') => `<label>${label}<input type="text" id="ev-${k}" data-ev="${k}" value="${esc(ev[k])}" placeholder="${esc(ph)}"></label>`;
-    host.innerHTML = `
-      <header><div><p class="eyebrow">Host tools · only you see this</p><h2>Guest list</h2></div>
-        <button class="primary" id="save">Save & publish</button></header>
-      <div class="status" id="status"></div>
-      <div class="tiles">
-        <div class="tile total"><span>Total attending</span><b>${confirmed}</b></div>
-        <div class="tile"><span>Seats offered</span><b>${invited}</b></div>
-        <div class="tile"><span>Awaiting reply</span><b>${pending}</b></div>
-        <div class="tile"><span>Declined</span><b>${declined}</b></div>
-      </div>
-      <p class="note">Guests send their reply to your WhatsApp. Log each reply in the Reply column and the total updates. A guest can never pick more than the seats you set.</p>
-      <div class="actions"><button id="csv" hidden>Download sheet (CSV)</button></div>
-      <div class="tablewrap"><table>
-        <thead><tr><th>Guest / family</th><th>Mobile</th><th>Seats</th><th>Reply</th><th></th></tr></thead>
-        <tbody>${g.map((x,i)=>`<tr data-i="${i}">
-          <td><input type="text" aria-label="Guest name" data-k="name" value="${esc(x.name)}"></td>
-          <td><input type="tel" aria-label="Mobile" data-k="phone" value="${esc(x.phone)}" placeholder="050 123 4567"></td>
-          <td class="n"><input type="number" aria-label="Seats" data-k="seats" min="1" max="50" value="${+x.seats||1}"></td>
-          <td class="st"><select aria-label="Reply" data-k="status">
-            <option value="pending" ${x.status==='pending'?'selected':''}>Awaiting reply</option>
-            ${Array.from({length:+x.seats||1},(_,n)=>n+1).map(n=>`<option value="attending:${n}" ${x.status==='attending'&&+x.coming===n?'selected':''}>Attending · ${n}</option>`).join('')}
-            <option value="declined" ${x.status==='declined'?'selected':''}>Declined</option>
-          </select></td>
-          <td class="x"><button aria-label="Remove guest" data-del="${i}">×</button></td>
-        </tr>`).join('')}</tbody>
-      </table></div>
-      <div class="actions"><button id="add">+ Add guest</button></div>
-      <h3 style="font-size:20px">Invitation details</h3>
-      <div class="fields">
-        <div class="row">${field('name1','First name')}${field('name2','Second name')}</div>
-        ${field('date','Date','Friday, 12 December 2026')}
-        <div class="row">${field('time','Time')}${field('deadline','Reply by')}</div>
-        ${field('venue','Venue')}
-        ${field('hostPhone','Your WhatsApp number (with country code)','971501234567')}
+        <button class="ghost" id="edit">Change my answer</button>
+        <a class="secondary" href="${wa}" target="_blank" rel="noopener">Send a message on WhatsApp</a>
       </div>`;
-    host.querySelectorAll('[data-ev]').forEach(inp => inp.addEventListener('input', () => { draft.event[inp.dataset.ev] = inp.value; }));
-    host.querySelectorAll('tbody [data-k]').forEach(inp => inp.addEventListener('change', () => {
-      const row = draft.guests[+inp.closest('tr').dataset.i]; const k = inp.dataset.k;
-      if (k==='seats') { row.seats = Math.max(1, +inp.value||1); if (row.coming>row.seats) row.coming=row.seats; renderHost(); }
-      else if (k==='status') { if (inp.value.startsWith('attending:')) { row.status='attending'; row.coming=+inp.value.split(':')[1]; } else { row.status=inp.value; row.coming=0; } renderHost(); }
-      else row[k] = inp.value;
-    }));
-    host.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { draft.guests.splice(+b.dataset.del,1); renderHost(); });
-    $('#add').onclick = () => { draft.guests.push({id:'g'+Date.now().toString(36), name:'', phone:'', seats:2, status:'pending', coming:0}); renderHost(); host.querySelector('tbody tr:last-child input').focus(); };
-    $('#save').onclick = save;
-    if (dl) { const c = $('#csv'); c.hidden = false; c.onclick = exportCsv; }
+    $('#edit').onclick = () => renderChoice();
   }
 
-  async function exportCsv(){
-    const q = v => `"${String(v ?? '').replace(/"/g,'""')}"`;
-    const label = x => x.status==='attending' ? 'Attending' : x.status==='declined' ? 'Declined' : 'Awaiting reply';
-    const rows = [['Guest / family','Mobile','Seats offered','Reply','Attending']];
-    for (const x of draft.guests) rows.push([x.name, x.phone, x.seats, label(x), x.status==='attending' ? x.coming : 0]);
-    const total = draft.guests.filter(x=>x.status==='attending').reduce((a,x)=>a+(+x.coming||0),0);
-    rows.push([], ['Total attending','','','',total]);
-    const csv = '﻿' + rows.map(r => r.map(q).join(',')).join('\r\n');
-    const st = $('#status');
-    try { await dl.save({filename:`engagement-rsvp-${new Date().toISOString().slice(0,10)}.csv`, data: csv}); st.textContent = 'Sheet saved.'; }
-    catch (e) { st.textContent = e && e.code==='unavailable' ? 'Downloads aren\'t available in this view.' : 'Download cancelled.'; }
-  }
-
-  function buildHtml(){
-    const reset = document.head.querySelector('style');
-    const head = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>'
-      + (reset ? reset.textContent : ':root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}')
-      + '</style></head><body>';
-    const title = document.querySelector('title');
-    const parts = [
-      `<title>${esc(title ? title.textContent : 'RSVP')}</title>`,
-      '<meta name="claude:viewport-fit-sides" content="cover">',
-      ...Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.outerHTML),
-      document.body.querySelector('style') ? document.body.querySelector('style').outerHTML : '',
-      document.getElementById('page-tpl').outerHTML,
-      `<script type="application/json" id="rsvp-data">${JSON.stringify(draft).replace(/</g,'\\u003c')}<\/script>`,
-      `<script id="app-js">${document.getElementById('app-js').textContent}<\/script>`
-    ];
-    return head + parts.join('\n') + '</body></html>';
-  }
-
-  async function save(){
-    const st = $('#status'), b = $('#save');
-    draft.guests = draft.guests.filter(x => x.name.trim() || x.phone.trim());
-    if (!digits(draft.event.hostPhone)) { st.textContent = 'Add your WhatsApp number first so guests can reply.'; return; }
-    b.disabled = true; st.textContent = 'Publishing…';
-    try { await art.publish(buildHtml()); st.textContent = 'Published. Reloading…'; }
-    catch (e) {
-      b.disabled = false;
-      const c = e && e.code;
-      st.textContent = c==='conflict' ? 'A newer version was just published; the page is reloading.'
-        : (c==='not_writer'||c==='not_granted') ? 'This view is read-only, so changes can\'t be saved here.'
-        : c==='rate_limited' ? 'Publishing too often. Wait a moment and try again.'
-        : 'Couldn\'t publish right now. Try again in a moment.';
-    }
-  }
-
-  (async () => {
-    if (!window.claude || !claude.use) return;
-    const user = await claude.use('user');
-    if (!user || !(user.isOwner() || user.canEdit())) return;
-    art = await claude.use('artifact');
-    if (!art) return;
-    dl = await claude.use('downloads');
-    host.hidden = false; renderHost();
-  })();
+  renderLookup();
 })();
 </script>
-
 </body>
 </html>
