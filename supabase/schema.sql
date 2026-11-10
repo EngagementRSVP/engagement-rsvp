@@ -73,14 +73,16 @@ language sql stable security definer set search_path = '' as $$
   order by g.created_at limit 1;
 $$;
 
--- Guests save their reply; the phone must match the invitation and the count is capped at the seats offered.
+-- Guests save their reply once; the phone must match the invitation and the count is capped at the seats offered.
+-- After that only the host can change it (or set it back to pending to let the guest answer again).
 create or replace function public.submit_rsvp(p_id uuid, p_phone text, p_attending boolean, p_coming int)
 returns text
 language plpgsql security definer set search_path = '' as $$
 declare g public.guests;
 begin
-  select * into g from public.guests where id = p_id;
+  select * into g from public.guests where id = p_id for update;
   if g.id is null or not public.phone_match(g.phone, p_phone) then raise exception 'invitation not found'; end if;
+  if g.status <> 'pending' then raise exception 'already replied'; end if;
   update public.guests set
     status = case when p_attending then 'attending' else 'declined' end,
     coming = case when p_attending then least(greatest(coalesce(p_coming, 1), 1), g.seats) else 0 end,

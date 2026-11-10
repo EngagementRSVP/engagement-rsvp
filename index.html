@@ -156,7 +156,7 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
       const r = await findGuest(phone);
       if (r.error) return renderLookup('Something went wrong. Please check your connection and try again.');
       if (r.notFound) return renderLookup(`We couldn't find that number. Try the number your invitation was sent to, or message ${fmtHost(EV.host_phone)}.`);
-      renderChoice();
+      guest.status === 'pending' ? renderChoice() : renderDone();
     });
   }
 
@@ -165,7 +165,7 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
     rsvp.innerHTML = `
       <div><p class="eyebrow">RSVP</p><p class="greet">Welcome, ${esc(guest.name)}</p>
         <p class="seats">We have reserved <b>${s} ${s===1?'seat':'seats'}</b> for you.</p>
-        ${guest.status!=='pending' ? `<p class="note">You already replied. You can change your answer below.</p>` : ''}</div>
+        <p class="note">You can reply once, so please check before sending.</p></div>
       <div class="choice">
         <button id="yes" aria-pressed="${attending===true}">Joyfully accept</button>
         <button id="no" aria-pressed="${attending===false}">Regretfully decline</button>
@@ -199,28 +199,32 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
   async function submit(){
     const b = $('#next'); b.disabled = true; b.textContent = 'Sending…';
     const { error } = await sb.rpc('submit_rsvp', { p_id: guest.id, p_phone: phone, p_attending: attending, p_coming: attending ? count : 0 });
+    if (error && /already replied/.test(error.message || '')) {
+      // Answered meanwhile (another device or window): show the reply on record
+      const r = await findGuest(phone);
+      return r.ok ? renderDone() : renderLookup();
+    }
     if (error) return renderChoice('Your reply could not be saved. Please check your connection and try again.');
     guest.status = attending ? 'attending' : 'declined'; guest.coming = attending ? count : 0;
     remember(); renderDone();
   }
 
+  // The reply on record; guests can't resubmit, so changes go to the host on WhatsApp
   function renderDone(){
-    const msg = attending
-      ? `RSVP for ${couple()}'s engagement\n${guest.name}: attending, ${count} of ${guest.seats} seats.`
-      : `RSVP for ${couple()}'s engagement\n${guest.name}: unable to attend.`;
+    const yes = guest.status === 'attending', n = guest.coming;
+    const msg = `RSVP for ${couple()}'s engagement\n${guest.name}: I replied "${yes ? `attending, ${n} of ${guest.seats} seats` : 'unable to attend'}" and would like to change it.`;
     const wa = `https://wa.me/${digits(EV.host_phone)}?text=${encodeURIComponent(msg)}`;
     rsvp.innerHTML = `
       <div class="done">
         <p class="eyebrow">Reply received</p>
-        <p class="greet">${attending ? `We can't wait to see you${count>1?' all':''}` : `We'll miss you`}</p>
-        <p class="note">${attending ? `Your ${count} ${count===1?'seat is':'seats are'} confirmed.` : 'Your answer has been recorded.'} ${esc(couple())} can see it now.</p>
+        <p class="greet">${yes ? `We can't wait to see you${n>1?' all':''}` : `We'll miss you`}</p>
+        <p class="note">${esc(guest.name)}, ${yes ? `your ${n} ${n===1?'seat is':'seats are'} confirmed.` : 'your answer has been recorded.'} ${esc(couple())} can see it now.</p>
       </div>
+      <p class="note" style="text-align:center">Need to change your reply? Message ${esc(couple())} on WhatsApp.</p>
       <div class="actions">
-        <button class="ghost" id="edit">Change my answer</button>
-        <a class="secondary" href="${wa}" target="_blank" rel="noopener">Send a message on WhatsApp</a>
+        <a class="secondary" href="${wa}" target="_blank" rel="noopener">Ask to change my reply</a>
       </div>
       <p class="note" style="text-align:center">Not ${esc(guest.name)}? <button class="ghost" id="notme" style="padding:4px 10px">Use a different number</button></p>`;
-    $('#edit').onclick = () => renderChoice();
     $('#notme').onclick = () => { guest=null; phone=''; attending=null; forget(); renderLookup(); };
   }
 
