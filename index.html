@@ -115,6 +115,29 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
   const rsvp = $('#rsvp');
   let guest = null, phone = '', attending = null, count = 0;
 
+  // Remembers the guest's number and unsent choice on this device, so reopening the page picks up where they left off
+  const MEM = 'rsvp-guest-v1';
+  function remember(){ try { localStorage.setItem(MEM, JSON.stringify({ phone, attending, count })); } catch {} }
+  function forget(){ try { localStorage.removeItem(MEM); } catch {} }
+  function recall(){ try { return JSON.parse(localStorage.getItem(MEM)); } catch { return null; } }
+
+  async function findGuest(p, draft){
+    const { data, error } = await sb.rpc('lookup_guest', { p_phone: p });
+    if (error) return { error: true };
+    const g = data && data[0];
+    if (!g) return { notFound: true };
+    guest = g; phone = p;
+    attending = g.status==='attending' ? true : g.status==='declined' ? false : null;
+    count = g.coming || g.seats;
+    // An unsent choice only applies while the guest hasn't replied yet
+    if (draft && g.status==='pending' && draft.attending !== undefined) {
+      attending = draft.attending;
+      count = Math.min(Math.max(+draft.count||1, 1), g.seats);
+    }
+    remember();
+    return { ok: true };
+  }
+
   function renderLookup(err){
     rsvp.innerHTML = `
       <div><p class="eyebrow">RSVP</p><h2>Find your invitation</h2></div>
@@ -130,12 +153,10 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
       e.preventDefault();
       phone = $('#phone').value;
       $('#find').disabled = true; $('#find').textContent = 'Looking…';
-      const { data, error } = await sb.rpc('lookup_guest', { p_phone: phone });
-      if (error) return renderLookup('Something went wrong. Please check your connection and try again.');
-      const g = data && data[0];
-      if (!g) return renderLookup(`We couldn't find that number. Try the number your invitation was sent to, or message ${fmtHost(EV.host_phone)}.`);
-      guest = g; attending = g.status==='attending' ? true : g.status==='declined' ? false : null;
-      count = g.coming || g.seats; renderChoice();
+      const r = await findGuest(phone);
+      if (r.error) return renderLookup('Something went wrong. Please check your connection and try again.');
+      if (r.notFound) return renderLookup(`We couldn't find that number. Try the number your invitation was sent to, or message ${fmtHost(EV.host_phone)}.`);
+      renderChoice();
     });
   }
 
@@ -166,11 +187,11 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
     const sync = () => { $('#yes').setAttribute('aria-pressed', attending===true); $('#no').setAttribute('aria-pressed', attending===false);
       $('#seatpick').hidden = attending!==true; $('#next').disabled = attending===null; $('#cnt').value = count;
       $('#minus').disabled = count<=1; $('#plus').disabled = count>=s; };
-    $('#yes').onclick = () => { attending = true; sync(); };
-    $('#no').onclick = () => { attending = false; sync(); };
-    $('#minus').onclick = () => { count = Math.max(1, count-1); sync(); };
-    $('#plus').onclick = () => { count = Math.min(s, count+1); sync(); };
-    $('#back').onclick = () => { guest=null; phone=''; renderLookup(); };
+    $('#yes').onclick = () => { attending = true; sync(); remember(); };
+    $('#no').onclick = () => { attending = false; sync(); remember(); };
+    $('#minus').onclick = () => { count = Math.max(1, count-1); sync(); remember(); };
+    $('#plus').onclick = () => { count = Math.min(s, count+1); sync(); remember(); };
+    $('#back').onclick = () => { guest=null; phone=''; attending=null; forget(); renderLookup(); };
     $('#next').onclick = submit;
     sync();
   }
@@ -180,7 +201,7 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
     const { error } = await sb.rpc('submit_rsvp', { p_id: guest.id, p_phone: phone, p_attending: attending, p_coming: attending ? count : 0 });
     if (error) return renderChoice('Your reply could not be saved. Please check your connection and try again.');
     guest.status = attending ? 'attending' : 'declined'; guest.coming = attending ? count : 0;
-    renderDone();
+    remember(); renderDone();
   }
 
   function renderDone(){
@@ -197,11 +218,22 @@ a.secondary{display:inline-flex;justify-content:center;align-items:center;text-d
       <div class="actions">
         <button class="ghost" id="edit">Change my answer</button>
         <a class="secondary" href="${wa}" target="_blank" rel="noopener">Send a message on WhatsApp</a>
-      </div>`;
+      </div>
+      <p class="note" style="text-align:center">Not ${esc(guest.name)}? <button class="ghost" id="notme" style="padding:4px 10px">Use a different number</button></p>`;
     $('#edit').onclick = () => renderChoice();
+    $('#notme').onclick = () => { guest=null; phone=''; attending=null; forget(); renderLookup(); };
   }
 
-  renderLookup();
+  // Returning visitor: reload their invitation with the latest reply from the database
+  (async () => {
+    const saved = recall();
+    if (!saved || !saved.phone) return renderLookup();
+    rsvp.innerHTML = `<p class="note">Loading your invitation…</p>`;
+    const r = await findGuest(saved.phone, saved);
+    if (r.error) { phone = saved.phone; return renderLookup('Something went wrong. Please check your connection and try again.'); }
+    if (r.notFound) { forget(); return renderLookup(); }
+    guest.status === 'pending' ? renderChoice() : renderDone();
+  })();
 })();
 </script>
 </body>
