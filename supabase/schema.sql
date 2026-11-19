@@ -26,6 +26,8 @@ create table if not exists public.guests (
   responded_at timestamptz,
   created_at timestamptz not null default now()
 );
+-- When the host shared the invitation (null = not sent yet)
+alter table public.guests add column if not exists invited_at timestamptz;
 insert into public.guests (name, phone, seats)
 select 'Yousef Issa', '0509413587', 1
 where not exists (select 1 from public.guests);

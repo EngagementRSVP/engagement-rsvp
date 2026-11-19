@@ -35,12 +35,14 @@ button:disabled{opacity:.5;cursor:default}
 .actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .note{font-size:14px;color:var(--muted);margin:0}
 .tablewrap{overflow-x:auto}
-table{border-collapse:collapse;width:100%;min-width:620px;font-size:14px}
+table{border-collapse:collapse;width:100%;min-width:700px;font-size:14px}
 th{text-align:left;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px;border-bottom:1px solid var(--line)}
 td{padding:6px;border-bottom:1px solid var(--line)}
 td input,td select{padding:7px 8px;font-size:14px}
 td.n{width:80px}td.st{width:170px}td.x{width:40px;text-align:center}
-td.x button{padding:4px 8px;border:none;background:transparent;color:var(--muted);font-size:18px}
+td.sent{width:120px;white-space:nowrap}
+td.sent label{display:inline-flex;align-items:center;gap:6px;font-weight:500;cursor:pointer}
+td.sent input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent);margin:0}
 tr.ok td:first-child{box-shadow:inset 3px 0 var(--ok)}tr.bad td:first-child{box-shadow:inset 3px 0 var(--bad)}
 .when{display:block;font-size:12px;color:var(--muted);margin-top:2px}
 .status{font-size:14px;color:var(--muted);min-height:20px}
@@ -80,7 +82,7 @@ ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px}
     <section class="card" style="display:grid;gap:14px">
       <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><h2>Guest list</h2><button id="add">+ Add guest</button></div>
       <div class="tablewrap"><table>
-        <thead><tr><th>Guest / family</th><th>Mobile (what they will type)</th><th>Seats</th><th>Reply</th><th></th></tr></thead>
+        <thead><tr><th>Guest / family</th><th>Mobile (what they will type)</th><th>Seats</th><th>Invitation</th><th>Reply</th><th></th></tr></thead>
         <tbody id="rows"></tbody>
       </table></div>
       <div class="actions" id="importbar" hidden></div>
@@ -96,7 +98,8 @@ ol{margin:0;padding-left:20px;display:grid;gap:6px;font-size:14px}
       <h2>How to use</h2>
       <ol>
         <li>Add each invitation here with the mobile number you'll send it to and the seats offered.</li>
-        <li>Send guests the invitation link. They enter their number and reply; you see it here straight away.</li>
+        <li>Send each guest the invitation link, then tick <b>Sent</b> next to them so you know who has it.</li>
+        <li>Guests enter their number and reply; you see it here straight away.</li>
         <li>Each number can reply once. To change a reply, set it here yourself, or set it back to <b>Awaiting reply</b> to let the guest answer again.</li>
         <li><b>Download sheet</b> gives you the list for Excel.</li>
       </ol>
@@ -182,6 +185,8 @@ function render(){
     <td><input type="text" data-k="name" value="${esc(x.name)}" placeholder="Al Mansoori family"></td>
     <td><input type="tel" data-k="phone" value="${esc(x.phone)}" placeholder="050 123 4567"></td>
     <td class="n"><input type="number" data-k="seats" min="1" max="50" value="${+x.seats||1}"></td>
+    <td class="sent"><label title="${x.invited_at ? 'Sent ' + esc(fmtWhen(x.invited_at)) : 'Not sent yet'}"><input type="checkbox" data-sent ${x.invited_at?'checked':''}> Sent</label>
+      ${x.invited_at ? `<span class="when">${esc(fmtWhen(x.invited_at))}</span>` : ''}</td>
     <td class="st"><select data-k="status">
       <option value="pending" ${x.status==='pending'?'selected':''}>Awaiting reply</option>
       ${Array.from({length:+x.seats||1},(_,n)=>n+1).map(n=>`<option value="attending:${n}" ${x.status==='attending'&&+x.coming===n?'selected':''}>Attending · ${n}</option>`).join('')}
@@ -205,6 +210,9 @@ function render(){
     }
     else await saveGuest(r, { [k]: i.value });
     render();
+  });
+  document.querySelectorAll('[data-sent]').forEach(c=>c.onchange=async()=>{
+    await saveGuest(G[+c.closest('tr').dataset.i], { invited_at: c.checked ? new Date().toISOString() : null }); render();
   });
   document.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{
     const r = G[+b.dataset.del];
